@@ -1,0 +1,14 @@
+add to your .emacs file:
+
+(require 'shem-chatcore)
+(setq shem-jabber-name-list
+  (list '("testJabberBuddy" "test@jabber.org")))
+(setq shem-icq-name-list
+  (list '("testICQBuddy" "777777")))
+(shem-chat-connect)
+
+run for chat with jabber protocol:
+M-x shem-chat-with
+
+run for chat with icq protocol:
+M-1 M-x shem-chat-with
