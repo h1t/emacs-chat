@@ -1,7 +1,12 @@
+(require 'cl)
 (require 'shem-chatbuffer)
 (require 'shem-pidgin)
 (require 'shem-chatactivity)
 (require 'shem-util)
+
+(defconst shem-protocol-delimeter "-")
+
+(defvar shem-default-input-method "russian-computer")
 
 (defun shem-chat-connect ()
   (shem-pidgin-init))

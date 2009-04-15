@@ -1,12 +1,21 @@
 add to your .emacs file:
 
 (require 'shem-chatcore)
+;; jabber user list
 (setq shem-jabber-name-list
-  (list '("testJabberBuddy" "test@jabber.org")))
+  (list '("testJabberBuddy1" "test@jabber.org")
+        '("testJabberBuddy2" "test@jabber.org")))
+;; icq user list
 (setq shem-icq-name-list
-  (list '("testICQBuddy" "777777")))
+  (list '("testICQBuddy1" "777777")
+        '("testICQBuddy2" "777777")))
+
+;;default input method
+(setq shem-default-input-method "russian-computer")
+
 (shem-chat-connect)
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 run for chat with jabber protocol:
 M-x shem-chat-with
 
