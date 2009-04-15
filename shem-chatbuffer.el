@@ -161,7 +161,7 @@
                                    shem-icq-protocol
                                  shem-jabber-protocol)))
                  (shem-protocol-user-name
-                  (completing-read "chat with: " (shem-user-list protocol))
+                  (ido-completing-read "chat with: " (shem-user-list protocol))
                   protocol)))
          (curr-buf (or (get-buffer (shem-chat-get-buffer user)) (shem-chat-create-buffer user))))
     (switch-to-buffer curr-buf)))
