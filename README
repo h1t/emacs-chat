@@ -1,14 +1,6 @@
 add to your .emacs file:
 
 (require 'shem-chatcore)
-;; jabber user list
-(setq shem-jabber-name-list
-  (list '("testJabberBuddy1" "test@jabber.org")
-        '("testJabberBuddy2" "test@jabber.org")))
-;; icq user list
-(setq shem-icq-name-list
-  (list '("testICQBuddy1" "777777")
-        '("testICQBuddy2" "777777")))
 
 ;;default input method
 (setq shem-default-input-method "russian-computer")

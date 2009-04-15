@@ -9,46 +9,29 @@
 
 (defvar shem-pidgin-accounts nil)
 
-(defvar shem-icq-name-list nil)
-
-(defvar shem-jabber-name-list nil)
+(defvar shem-pidgin-all-user-list nil)
 
 (defvar shem-pidgin-regexp-filter
   '(("<br>\\|<br/>" "\n")
     ("<a href='.*'>\\(.*\\)</a>" "\\1")))
 
 (defun shem-pidgin-recieve-signal (account sender text conversation flags)
-  (let* ((protocol (cdr (assoc account  shem-pidgin-accounts)))
-        (message (if (string-equal protocol shem-jabber-protocol)
-                     (shem-pidgin-parse-jabber-message text)
-                   text)))
+  (let* ((protocol (car (rassoc account shem-pidgin-accounts)))
+         (message (shem-pidgin-parse-message text))
+         (sender-name (car (rassoc (list (car (split-string sender "/"))) (shem-pidgin-user-list protocol)))))
     (shem-chat-recieve
-     (shem-pidgin-sender-name protocol sender t)
-     (shem-pidgin-sender-name protocol sender) message)))
+     (shem-protocol-user-name sender-name)
+     (shem-protocol-user-name sender-name protocol)
+     message)))
 
 
-(defun shem-pidgin-sender-name (protocol sender-id &optional only-name)
-  (shem-protocol-user-name
-   (car (find sender-id
-              (shem-pidgin-buddy-list protocol)
-              :key #'second
-              :test (if (string-equal protocol shem-jabber-protocol)
-                        #'shem-pidgin-jabber-user-compare
-                      #'string-equal)))
-   (unless only-name protocol)))
-
-(defun shem-pidgin-jabber-user-compare (user1 user2)
-  (string-equal (car (split-string user1 "/"))
-                (car (split-string user2 "/"))))
-
-
-(defun shem-pidgin-parse-jabber-message (message)
+(defun shem-pidgin-parse-message (message)
   (message (concat "from jabber: '" message "'"))
   (with-temp-buffer
     (insert message)
     (mapc (lambda (regexp-info)
             (goto-char (point-min))
-            (shem-replace-regexp (car regexp-info) (cadr regexp-info)))
+            (apply 'shem-replace-regexp regexp-info))
           shem-pidgin-regexp-filter)
     (let* ((body (xml-parse-region (point-min) (point-max)))
            (xml  (cddr (if (assoc 'body body)
@@ -65,19 +48,29 @@
 
 (defun shem-pidgin-init ()
   (ignore-errors
+    ;; (shem-dbus-purple-call-method "ReceivedImMsg"
+    ;;                               'shem-pidgin-recieve-signal)
     (dbus-register-signal :session "im.pidgin.purple.PurpleService"
                           "/im/pidgin/purple/PurpleObject"
                           "im.pidgin.purple.PurpleInterface"
                           "ReceivedImMsg"
                           'shem-pidgin-recieve-signal))
-  (setq shem-pidgin-accounts (get-account-list)))
+  (setq shem-pidgin-accounts (shem-pidgin-account-list))
+  (setq shem-pidgin-all-user-list
+        (mapcar (lambda (account-info)
+                  (list (car account-info)
+                        (shem-pidgin-buddy-list (cdr account-info))))
+                shem-pidgin-accounts)))
+
 
 
 (defun shem-pidgin-send-message (to message)
-  (let ((sender (split-string to shem-protocol-delimeter)))
+  (let* ((sender (split-string to shem-protocol-delimeter))
+         (name (car sender))
+         (protocol (second sender)))
     (shem-dbus-pidgin-send-message
-     (car (find (second sender) shem-pidgin-accounts :test #'string-equal :key #'cdr))
-     (second (assoc (car sender) (shem-pidgin-buddy-list (second sender))))
+     (cdr (assoc protocol shem-pidgin-accounts))
+     (second (assoc name (shem-pidgin-user-list protocol)))
      message)))
 
 (defmacro shem-dbus-purple-call-method (method &rest args)
@@ -86,20 +79,18 @@
                          "im.pidgin.purple.PurpleInterface"
                          ,method ,@args))
 
-(defun get-account-list ()
+(defun shem-pidgin-account-list ()
   (mapcar (lambda (account)
-            (cons account (downcase
-                           (shem-dbus-purple-call-method
-                            "PurpleAccountGetProtocolName"
-                            :int32 account))))
+            (cons (downcase
+                   (shem-dbus-purple-call-method
+                    "PurpleAccountGetProtocolName"
+                    :int32 account))
+                  account))
           (shem-dbus-purple-call-method "PurpleAccountsGetAllActive")))
 
 
 
 (defun shem-dbus-pidgin-send-message (account recipient message)
-  ;; (message (number-to-string account))
-  ;; (message (number-to-string recipient))
-  ;;(message message)
   (let* ((conversation (shem-dbus-purple-call-method
                         "PurpleConversationNew"
                         1 :int32 account recipient))
@@ -111,9 +102,14 @@
        :int32 im (string-as-unibyte message))))
 
 
-(defun shem-pidgin-buddy-list (protocol)
-  (if (string-equal protocol shem-icq-protocol)
-      shem-icq-name-list
-    shem-jabber-name-list))
+(defun shem-pidgin-user-list (protocol)
+  (second (assoc protocol shem-pidgin-all-user-list)))
+
+(defun shem-pidgin-buddy-list (account)
+  (mapcar (lambda (buddy)
+            (list (shem-dbus-purple-call-method "PurpleBuddyGetAlias" :int32 buddy)
+                  (shem-dbus-purple-call-method "PurpleBuddyGetName"  :int32 buddy)))
+          (shem-dbus-purple-call-method "PurpleFindBuddies" :int32 account  "")))
 
 (provide 'shem-pidgin)
+
