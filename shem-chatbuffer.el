@@ -1,4 +1,4 @@
-(defgroup shem-chat nil "Herocraft instant messaging"
+(defgroup shem-chat nil "Wrapper for pidgin instant messaging"
   :group 'applications)
 
 
@@ -17,6 +17,8 @@
 
 (defvar shem-chat-send-function nil
   "Function for sending a message from a chat buffer.")
+
+(defvar shem-chating-with nil)
 
 
 (defconst shem-chat-line-dilimeter "----\n")
@@ -89,14 +91,14 @@
         (put-text-property beg end 'rear-nonsticky t)
 
         ;;add message to history
-        (write-region beg end (concat "~/.messager/" shem-chatting-with ".txt") t 'no-echo)
+        (write-region beg end (concat "~/.messager/" shem-chating-with ".txt") t 'no-echo)
 
         ;; this is always non-nil, so we return that
         (setq shem-chat-point-insert (marker-position point-insert))))))
 
 
 (defun shem-chat-send (body)
-  (shem-chat-send-message shem-chatting-with body)
+  (shem-chat-send-message shem-chating-with body)
   (shem-chat-buffer-display 'shem-chat-self-prompt
                             nil
                             '(insert)
@@ -138,8 +140,8 @@
   (with-current-buffer (get-buffer-create (shem-chat-get-buffer chat-with))
     (insert shem-chat-line-dilimeter)
     (if (not (eq major-mode 'shem-chat-mode)) (shem-chat-mode))
-    (make-local-variable 'shem-chatting-with)
-    (setq shem-chatting-with chat-with)
+    (make-local-variable 'shem-chating-with)
+    (setq shem-chating-with chat-with)
     (setq shem-chat-send-function 'shem-chat-send)
     (make-local-variable 'shem-chat-earliest-backlog)
     (set-input-method shem-default-input-method)

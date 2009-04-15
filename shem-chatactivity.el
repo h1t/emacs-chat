@@ -11,17 +11,18 @@
 
 (defun shem-activity-show-p (from)
   (let ((buffer (get-buffer (shem-chat-get-buffer from))))
-         (not (get-buffer-window buffer 'visible))))
+         (get-buffer-window buffer 'visible)))
 
 (defun shem-activity-add (from)
-  (when (shem-activity-show-p from)
+  (unless (shem-activity-show-p from)
     (add-to-list 'shem-activity-list from)
     (shem-activity-mode-line-update)))
 
 (defun shem-activity-clean ()
-  (setq shem-activity-list (delete-if-not #'shem-activity-show-p
-                                            shem-activity-list))
-  (shem-activity-mode-line-update))
+  (when shem-activity-list
+    (setq shem-activity-list
+          (shem-delete-if 'shem-activity-show-p shem-activity-list))
+    (shem-activity-mode-line-update)))
 
 
 (defun shem-activity-switch-to (user)

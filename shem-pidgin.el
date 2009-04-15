@@ -18,7 +18,8 @@
 (defun shem-pidgin-recieve-signal (account sender text conversation flags)
   (let* ((protocol (car (rassoc account shem-pidgin-accounts)))
          (message (shem-pidgin-parse-message text))
-         (sender-name (car (rassoc (list (car (split-string sender "/"))) (shem-pidgin-user-list protocol)))))
+         (sender-name (car (rassoc (list (car (split-string sender "/")))
+                                   (shem-pidgin-user-list protocol)))))
     (shem-chat-recieve
      (shem-protocol-user-name sender-name)
      (shem-protocol-user-name sender-name protocol)
@@ -48,8 +49,6 @@
 
 (defun shem-pidgin-init ()
   (ignore-errors
-    ;; (shem-dbus-purple-call-method "ReceivedImMsg"
-    ;;                               'shem-pidgin-recieve-signal)
     (dbus-register-signal :session "im.pidgin.purple.PurpleService"
                           "/im/pidgin/purple/PurpleObject"
                           "im.pidgin.purple.PurpleInterface"
@@ -109,7 +108,7 @@
   (mapcar (lambda (buddy)
             (list (shem-dbus-purple-call-method "PurpleBuddyGetAlias" :int32 buddy)
                   (shem-dbus-purple-call-method "PurpleBuddyGetName"  :int32 buddy)))
-          (shem-dbus-purple-call-method "PurpleFindBuddies" :int32 account  "")))
+          (shem-dbus-purple-call-method "PurpleFindBuddies" :int32 account "")))
 
 (provide 'shem-pidgin)
 
