@@ -1,4 +1,4 @@
-(defgroup shem-chat nil "Wrapper for pidgin instant messaging"
+(defgroup shem-chat nil "Wrapper for pidgin instant messager"
   :group 'applications)
 
 

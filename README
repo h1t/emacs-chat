@@ -1,3 +1,9 @@
+Wrapper for pidgin instant messager
+~~~~~~~~~~~~~~~~~~~~
+run pidgin or finch
+I prefer run finch in screen:
+$ screen -dmS "finch" finch
+~~~~~~~~~~~~~~~~~~~~
 add to your .emacs file:
 
 (require 'shem-chatcore)
@@ -7,7 +13,7 @@ add to your .emacs file:
 
 (shem-chat-connect)
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 run for chat with jabber protocol:
 M-x shem-chat-with
 
