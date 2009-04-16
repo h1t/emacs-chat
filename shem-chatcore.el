@@ -1,3 +1,4 @@
+(require 'cl)
 (require 'shem-chatbuffer)
 (require 'shem-pidgin)
 (require 'shem-chatactivity)
