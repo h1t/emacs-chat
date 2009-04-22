@@ -7,8 +7,13 @@
 
 (defvar pidgin-default-input-method "russian-computer")
 
-(defun pidgin-chat-connect ()
-  (pidgin-init))
+(defvar pidgin-completing-read 'completing-read)
+
+(defun pidgin-connect ()
+  (when (and (fboundp 'ido-completing-read)
+             ido-mode)
+    (setq pidgin-completing-read 'ido-completing-read)))
+  (pidgin-init)
 
 (defvar pidgin-chat-from nil)
 (defvar pidgin-chat-to nil)
@@ -35,4 +40,4 @@
           list)
     (nreverse res)))
   
-(provide 'pidgin-chatcore)
+(provide 'pidgin)

@@ -6,12 +6,12 @@ $ screen -dmS "finch" finch
 ~~~~~~~~~~~~~~~~~~~~
 add to your .emacs file:
 
-(require 'pidgin-chatcore)
+(require 'pidgin)
 
 ;;default input method
 (setq pidgin-default-input-method "russian-computer")
 
-(pidgin-chat-connect)
+(pidgin-connect)
 
 ~~~~~~~~~~~~~~~~~~~~
 run for chat with jabber protocol:

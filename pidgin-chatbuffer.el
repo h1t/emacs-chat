@@ -163,7 +163,7 @@
                                    pidgin-icq-protocol
                                  pidgin-jabber-protocol)))
                  (pidgin-protocol-user-name
-                  (ido-completing-read "chat with: " (pidgin-user-list protocol))
+                  (funcall pidgin-completing-read "chat with: " (pidgin-user-list protocol))
                   protocol)))
          (curr-buf (or (get-buffer (pidgin-chat-get-buffer user)) (pidgin-chat-create-buffer user))))
     (switch-to-buffer curr-buf)))
