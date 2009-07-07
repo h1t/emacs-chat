@@ -4,12 +4,18 @@ run pidgin or finch
 I prefer run finch in screen:
 $ screen -dmS "finch" finch
 ~~~~~~~~~~~~~~~~~~~~
+create directory for store history (default name "~/.messenger"):
+$ mkdir ~/.pigin_log_directory
+~~~~~~~~~~~~~~~~~~~~
 add to your .emacs file:
 
 (require 'pidgin)
 
 ;;default input method
 (setq pidgin-default-input-method "russian-computer")
+
+;;set name of existing directory for store history
+(setq pidgin-messenger-directory "~/.pigin_log_directory")
 
 (pidgin-connect)
 

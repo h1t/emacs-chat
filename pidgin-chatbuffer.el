@@ -91,14 +91,14 @@
         (put-text-property beg end 'rear-nonsticky t)
 
         ;;add message to history
-        (write-region beg end (concat "~/.messager/" pidgin-chating-with ".txt") t 'no-echo)
+        (write-region beg end (concat pidgin-messenger-directory pidgin-chating-with ".txt") t 'no-echo)
 
         ;; this is always non-nil, so we return that
         (setq pidgin-chat-point-insert (marker-position point-insert))))))
 
 
 (defun pidgin-chat-send (body)
-  (pidgin-chat-send-message pidgin-chating-with body)
+  (pidgin-send-message pidgin-chating-with body)
   (pidgin-chat-buffer-display 'pidgin-chat-self-prompt
                             nil
                             '(insert)

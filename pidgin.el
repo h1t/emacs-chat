@@ -5,22 +5,17 @@
 
 (defconst pidgin-protocol-delimeter "-")
 
-(defvar pidgin-default-input-method "russian-computer")
+(defvar pidgin-default-input-method default-input-method)
 
 (defvar pidgin-completing-read 'completing-read)
+
+(defvar pidgin-messenger-directory "~/.messenger")
 
 (defun pidgin-connect ()
   (when (and (fboundp 'ido-completing-read)
              ido-mode)
     (setq pidgin-completing-read 'ido-completing-read)))
   (pidgin-init)
-
-(defvar pidgin-chat-from nil)
-(defvar pidgin-chat-to nil)
-(defvar pidgin-chat-message nil)
-
-(defun pidgin-chat-send-message (to message)
-  (pidgin-send-message to message))
 
 (defun pidgin-replace-regexp (regexp to-string)
   (while (re-search-forward regexp nil t)

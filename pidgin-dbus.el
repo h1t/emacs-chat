@@ -27,7 +27,7 @@
 
 
 (defun pidgin-parse-message (message)
-  (message (concat "from jabber: '" message "'"))
+  (message "%s" (format "from jabber: '%s'" message))
   (with-temp-buffer
     (insert message)
     (mapc (lambda (regexp-info)
@@ -38,12 +38,11 @@
            (xml  (cddr (if (assoc 'body body)
                            (assoc 'body body)
                          (assoc 'body (car body)))))
-          (res ""))
+           (res ""))
       (labels ((pidgin-visitor (span-list)
-                             (cond ((stringp span-list) (setq res (concat res span-list)))
-                                   ((eq (car span-list) 'span) (pidgin-visitor (cddr span-list)))
-                                   (t (dolist (elem span-list)
-                                        (pidgin-visitor elem))))))
+                               (cond ((stringp span-list) (setq res (concat res span-list)))
+                                     ((eq (car span-list) 'span) (pidgin-visitor (cddr span-list)))
+                                     (t (mapc 'pidgin-visitor span-list)))))
         (pidgin-visitor xml))
       res)))
 
@@ -67,16 +66,16 @@
   (let* ((sender (split-string to pidgin-protocol-delimeter))
          (name (car sender))
          (protocol (second sender)))
-    (pidgin-dbus-pidgin-send-message
+    (pidgin-dbus-send-message
      (cdr (assoc protocol pidgin-accounts))
      (second (assoc name (pidgin-user-list protocol)))
      message)))
 
 (defmacro pidgin-dbus-purple-call-method (method &rest args)
   `(dbus-call-method :session "im.pidgin.purple.PurpleService"
-                         "/im/pidgin/purple/PurpleObject"
-                         "im.pidgin.purple.PurpleInterface"
-                         ,method ,@args))
+                     "/im/pidgin/purple/PurpleObject"
+                     "im.pidgin.purple.PurpleInterface"
+                     ,method ,@args))
 
 (defun pidgin-account-list ()
   (mapcar (lambda (account)
@@ -89,16 +88,16 @@
 
 
 
-(defun pidgin-dbus-pidgin-send-message (account recipient message)
+(defun pidgin-dbus-send-message (account recipient message)
   (let* ((conversation (pidgin-dbus-purple-call-method
                         "PurpleConversationNew"
                         1 :int32 account recipient))
          (im (pidgin-dbus-purple-call-method
               "PurpleConvIm"
               :int32 conversation)))
-      (pidgin-dbus-purple-call-method
-       "PurpleConvImSend"
-       :int32 im (string-as-unibyte message))))
+    (pidgin-dbus-purple-call-method
+     "PurpleConvImSend"
+     :int32 im (string-as-unibyte message))))
 
 
 (defun pidgin-user-list (protocol)
