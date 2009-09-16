@@ -91,7 +91,7 @@
 (defun pidgin-dbus-send-message (account recipient message)
   (let* ((conversation (pidgin-dbus-purple-call-method
                         "PurpleConversationNew"
-                        1 :int32 account recipient))
+                        :int32 1 :int32 account recipient))
          (im (pidgin-dbus-purple-call-method
               "PurpleConvIm"
               :int32 conversation)))
